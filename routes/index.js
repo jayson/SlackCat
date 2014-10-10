@@ -5,7 +5,9 @@ var router = express.Router();
 var request = require('request');
 var http = require('http');
 var querystring = require('querystring');
-var exec = require('exec');
+var sys = require('sys')
+var exec = require('child_process').exec;
+function puts(error, stdout, stderr) { sys.puts(stdout) }
 
 router.post('/', function(req, res) {
 	// Replace spaces in request
@@ -139,8 +141,8 @@ router.post('/', function(req, res) {
             finishCall('https://github.com/jayson/SlackCat');
             break;
         case 'gitup':
-            exec(['git pull'], function (err, out, code) {
-                finishCall(out + "\n" + err);
+            exec("git pull", function (error, stdout, stderr) {
+                finishCall(stdout + "\n" + stderr);
             });
             break;
     }
