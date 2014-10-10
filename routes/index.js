@@ -140,7 +140,7 @@ router.post('/', function(req, res) {
             break;
         case 'gitup':
             exec(['git pull'], function (err, out, code) {
-                finishCall(out);
+                finishCall(out + "\n" + err);
             });
             break;
     }
