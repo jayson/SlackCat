@@ -5,6 +5,7 @@ var router = express.Router();
 var request = require('request');
 var http = require('http');
 var querystring = require('querystring');
+var exec = require('exec');
 
 router.post('/', function(req, res) {
 	// Replace spaces in request
@@ -136,6 +137,11 @@ router.post('/', function(req, res) {
             break;
         case 'source':
             finishCall('https://github.com/jayson/SlackCat');
+            break;
+        case 'gitup':
+            exec(['git pull'], function (err, out, code) {
+                finishCall(out);
+            });
             break;
     }
 });

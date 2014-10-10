@@ -1,5 +1,5 @@
 {
-  "name": "giphyslack",
+  "name": "slackcat",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -16,6 +16,7 @@
     "morgan": "~1.0.0",
     "request": "^2.40.0",
     "static-favicon": "~1.0.0",
-    "sqlite3": ">0"
+    "sqlite3": ">0",
+    "exec": "0.1.2"
   }
 }
