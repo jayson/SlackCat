@@ -134,6 +134,9 @@ router.post('/', function(req, res) {
             });
             req.end();
             break;
+        case 'source':
+            finishCall('https://github.com/jayson/SlackCat');
+            break;
     }
 });
 
