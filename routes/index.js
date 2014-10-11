@@ -8,6 +8,8 @@ var querystring = require('querystring');
 var sys = require('sys')
 var exec = require('child_process').exec;
 function puts(error, stdout, stderr) { sys.puts(stdout) }
+var image_index = 0;
+var rando = false;
 
 router.post('/', function(req, res) {
 	// Replace spaces in request
@@ -79,6 +81,8 @@ router.post('/', function(req, res) {
                 add_one("trolls", nick);
             }
             break;
+        case "resummon":
+            rando = true;
         case "summon":
         case "gif":
             var options = {
@@ -90,19 +94,33 @@ router.post('/', function(req, res) {
                     'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)'
                 }
             };
+            var tmpist = [];
             var req = http.get(options, 
                 function(res) {
                     res.setEncoding('utf8');
                     res.on('data', function (chunk) {
+                        tmpist.push(chunk);
+                    });
+
+                    res.on('end', function (e) {
+                        chunk = tmpist.join('');
+
                         var matches = chunk.match(/imgurl=(.*?)&/g);
                         if (matches) {
-                            finishCall(matches[0].replace(/^imgurl=/, '').replace(/&$/, ''));
+                            if (rando) {
+                                image_index = Math.floor(Math.random() * matches.length);
+                            }
+                            var match = matches[image_index];
+                            console.log(match);
+                            rando = false;
+                            finishCall(match.replace(/^imgurl=/, '').replace(/&$/, ''));
                         }
                     });
                 }
             ).on("error", function (e) {
                 finishCall("Got error: " + e.message);
             });
+
             break;
         case 'g':
         case 'google':
