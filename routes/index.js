@@ -164,6 +164,12 @@ router.post('/', function(req, res) {
                 finishCall(stdout + "\n" + stderr);
             });
             break;
+        case 'youtube':
+            exec("./youtube.py " + args, function (error, stdout, stderr) {
+                finishCall(stdout + "\n" + stderr);
+            });
+            break;
+
     }
 });
 
