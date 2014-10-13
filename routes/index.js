@@ -88,7 +88,7 @@ router.post('/', function(req, res) {
             var options = {
                 host: 'www.google.com',
                 port: 80,
-                path: "/search?tbm=isch&q=" + encodeURIComponent(args),
+                path: "/search?safe=strict&tbm=isch&q=" + encodeURIComponent(args),
                 method: 'GET',
                 headers: {
                     'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)'
