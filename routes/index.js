@@ -85,6 +85,10 @@ router.post('/', function(req, res) {
             rando = true;
         case "summon":
         case "gif":
+            if (0 && req.body.user_name == "travis") {
+                finishCall("http://4.bp.blogspot.com/_Nu9qz3BZvZU/S427XIB031I/AAAAAAAAAPg/38S5euCch7k/s400/justin_bieber_wallpaper_album_2009.jpg");
+                break;
+            }
             var options = {
                 host: 'www.google.com',
                 port: 80,
