@@ -67,7 +67,11 @@ router.post('/', function(req, res) {
 
     var respond = function(nick, command) {
         db.get("SELECT response FROM commands WHERE command = ? ORDER BY RANDOM() LIMIT 1", command, function (err, row) {
-            finishCall(row.response);
+            if (row) {
+                finishCall(row.response);
+            } else {
+                finishCall("I don't know how to " + command);
+            }
         });
     }
 
