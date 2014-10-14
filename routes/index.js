@@ -129,7 +129,6 @@ router.post('/', function(req, res) {
         case 'g':
         case 'google':
             var tmp = []
-            var qs = querystring.stringify(args);
             var options = {
                 host: 'ajax.googleapis.com',
                 port: 80,
@@ -147,7 +146,7 @@ router.post('/', function(req, res) {
                     });
 
                     res.on('end', function (e) {
-                        body = tmp.join('');
+                        var body = tmp.join('');
                         var result = JSON.parse(body);
                         finishCall(
                             result.responseData.results[0].titleNoFormatting + " @ " +
@@ -172,6 +171,49 @@ router.post('/', function(req, res) {
             exec("./youtube.py " + args, function (error, stdout, stderr) {
                 finishCall(stdout + "\n" + stderr);
             });
+            break;
+        case 'q':
+        case 'quote':
+            var symbol = args.replace(/\./, '-');
+            var params = [
+                's',
+                'k1',
+                'k2',
+                'c6',
+                'x',
+                'n',
+                'v',
+                'j1'
+            ]
+            var tmp = []
+            var options = {
+                host: 'download.finance.yahoo.com',
+                port: 80,
+                path: '/d/quotes.csv?f=' + params.join('') + '&s=' + encodeURIComponent(params),
+                method: 'GET',
+                headers: {
+                    'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)'
+                }
+            };
+
+            var req = http.request(options, 
+                function(res) {
+                    res.setEncoding('utf8');
+                    res.on('data', function (chunk) {
+                        tmp.push(chunk);
+                    });
+
+                    res.on('end', function (e) {
+                        var body = tmp.join('');
+                        var raw_list = body.trim().replace(/"/g, '').split(',');
+                        var message = raw_list[5] + " (" + raw_list[0] + ") " + raw_list[2] + " " + raw_list[3] + " (" + raw_list[3] + "%) http://finance.yahoo.com/q?s=" + raw_list[0];
+                        finishCall(message);
+                    });
+                }
+            ).on("error", function (e) {
+                finishCall("Got error: " + e.message);
+            });
+            req.end();
             break;
 
     }
