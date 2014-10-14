@@ -207,10 +207,11 @@ router.post('/', function(req, res) {
                         var body = tmp.join('');
                         var raw_list = body.trim().replace(/"/g, '').split(',');
                         var price = raw_list[1];
-                        price = price.replace(/N\/A - /,'');
-                        price = price.replace(/<b>/,'');
+                        price = price.replace(/N\/A - /, '');
+                        price = price.replace(/<b>/, '');
                         price = price.replace(/<\/b>/, '');
-                        var message = raw_list[5] + " (" + raw_list[0] + ") " + price + " " + raw_list[3] + " (" + raw_list[3] + "%) http://finance.yahoo.com/q?s=" + raw_list[0];
+                        var perc = perc.replace(/N\/A - /, '');
+                        var message = raw_list[5] + " (" + raw_list[0] + ") " + price + " " + raw_list[3] + " (" + perc + ") http://finance.yahoo.com/q?s=" + raw_list[0];
                         finishCall(message);
                     });
                 }
