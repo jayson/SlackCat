@@ -189,7 +189,7 @@ router.post('/', function(req, res) {
             var options = {
                 host: 'download.finance.yahoo.com',
                 port: 80,
-                path: '/d/quotes.csv?f=' + params.join('') + '&s=' + encodeURIComponent(params),
+                path: '/d/quotes.csv?f=' + params.join('') + '&s=' + encodeURIComponent(args),
                 method: 'GET',
                 headers: {
                     'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)'
@@ -206,7 +206,11 @@ router.post('/', function(req, res) {
                     res.on('end', function (e) {
                         var body = tmp.join('');
                         var raw_list = body.trim().replace(/"/g, '').split(',');
-                        var message = raw_list[5] + " (" + raw_list[0] + ") " + raw_list[2] + " " + raw_list[3] + " (" + raw_list[3] + "%) http://finance.yahoo.com/q?s=" + raw_list[0];
+                        var price = raw_list[1];
+                        price = price.replace(/N\/A - /,'');
+                        price = price.replace(/<b>/,'');
+                        price = price.replace(/<\/b>/, '');
+                        var message = raw_list[5] + " (" + raw_list[0] + ") " + price + " " + raw_list[3] + " (" + raw_list[3] + "%) http://finance.yahoo.com/q?s=" + raw_list[0];
                         finishCall(message);
                     });
                 }
