@@ -60,6 +60,17 @@ router.post('/', function(req, res) {
         });
     }
 
+    var learn = function(nick, command, response) {
+        db.run("INSERT OR IGNORE INTO commands VALUES (?, ?, ?)", nick, command, response);
+        finishCall("Learned command: " + command);
+    }
+
+    var respond = function(nick, command) {
+        db.get("SELECT response FROM commands WHERE command = ? ORDER BY RANDOM() LIMIT 1", command, function (err, row) {
+            finishCall(row.response);
+        });
+    }
+
     switch (command) {
         case "increment":
         case "pluses":
@@ -210,7 +221,7 @@ router.post('/', function(req, res) {
                         price = price.replace(/N\/A - /, '');
                         price = price.replace(/<b>/, '');
                         price = price.replace(/<\/b>/, '');
-                        var perc = perc.replace(/N\/A - /, '');
+                        var perc = raw_list[2].replace(/N\/A - /, '');
                         var message = raw_list[5] + " (" + raw_list[0] + ") " + price + " " + raw_list[3] + " (" + perc + ") http://finance.yahoo.com/q?s=" + raw_list[0];
                         finishCall(message);
                     });
@@ -220,7 +231,15 @@ router.post('/', function(req, res) {
             });
             req.end();
             break;
-
+        case 'learn':
+            var arg_parts = args.split(" "),
+                command = arg_parts[0],
+                response = arg_parts.slice(1).join(" ");
+            learn(nick, command, response);
+            break;
+        default:
+            respond(nick, command);
+            break;
     }
 });
 
