@@ -1,59 +1,68 @@
 # -*- coding: utf-8 -*-
-require "rubygems"
-require "bundler"
-Bundler.setup
-require "cinch"
-require "cinch/exceptions"
-require "json"
+require "./slackbot_setup"
 
-slackcat = Cinch::Bot.new do
-  @prefix = '!'
-  @slack_config = JSON.parse(File.read(".config"))
-
-  configure do |config|
-    config.nick = "SlackCat"
-    config.ssl.use = true
-    config.ssl.verify = true
-    config.user = "slackcat"
-    config.nick = "SlackCat"
-    config.password = File.open('.password', 'r') { |f| f.read }.strip!
-    config.server = "roguesquadron.irc.slack.com"
-    config.channels = []
+slackcat = Cinch::SlackBot.new do
+  if (File.exist?(".config"))
+    @slack_config = JSON.parse(File.read(".config"))
+  else 
+    @slack_config = []
+    File.write(".config", "{}")
   end
 
-  # DSL Macros
-  def slack_command(regexp, *args, &block)
-    new_regexp = Regexp.new("^#{Regexp.escape(@prefix)}#{regexp.to_s}")
-    info("Registering new slack command for #{new_regexp.to_s}")
-    on(:message, new_regexp, *args, &block)
+  set_config :ssl
+  set_config :user
+  set_config :nick, "slackcat"
+  set_config :user
+  set_config :password
+  set_config :server
+  set_config :port, 6667
+  load_plugins
+
+  # Helpers
+  helpers do 
+    def save_config
+      File.write(".config", JSON.pretty_generate(bot.get_slack_config, quirks_mode: true))
+    end
+
+    def load_config
+      @slack_config = JSON.parse(File.read(".config"))
+    end
   end
 
-  # Base slack commands
-  slack_command /join (.+)/ do |message, channel|
+  # Base slack bot commands
+  command /join (.+)/ do |message, channel|
     info("Joining channel #{channel}")
     bot.join(channel)
+    channels = bot.get_slack_config("channels")
+    channels.unshift channel
+    bot.set_slack_config("channels", channels)
+    save_config
   end
 
-  slack_command /part(?: (.+))?/ do |message, channel|
+  command /part(?: (.+))?/ do |message, channel|
     # Part current channel if none is given
     channel = channel || message.channel
 
     if channel
       info("Parting channel #{channel}")
       bot.part(channel)
+      channels = bot.get_slack_config("channels")
+      channels.delete_if { |key, value| value == channel }
+      bot.set_slack_config("channels", channels)
+      save_config
     else
-     info("No such channel to part #{channel}") 
+      info("No such channel to part #{channel}") 
     end
   end
 
-  # TODO: not working due to load_config undefined
-  slack_command /reload/ do |message|
+  command /reload/ do |message|
+    load_config
     @slack_config = JSON.parse(File.read(".config"))
-    puts @slack_config
     @slack_config["channels"].each do |channel| 
       bot.join(channel)
     end
   end
+  
 end
 
 slackcat.start
