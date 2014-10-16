@@ -62,7 +62,28 @@ slackcat = Cinch::SlackBot.new do
       bot.join(channel)
     end
   end
-  
+
+  command /source/ do |message|
+    message.reply "https://github.com/jayson/SlackCat"
+  end
+
+  command /gitup/ do |message|
+    cmd = "git pull"
+
+    puts cmd
+    Open3.popen3(cmd) do |inn, out, err, wait_thr|
+      output = ""
+      until out.eof?
+        # raise "Timeout" if output.empty? && Time.now.to_i - start > 300
+        chr = out.read(1)
+        output << chr
+        ret << chr
+      end
+      error_message = nil
+      error_message = err.read unless err.eof?
+      message.reply("#{output} #{error_message}")
+    end
+  end
 end
 
 slackcat.start
