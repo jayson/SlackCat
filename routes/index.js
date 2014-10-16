@@ -104,10 +104,14 @@ router.post('/', function(req, res) {
                 finishCall("http://4.bp.blogspot.com/_Nu9qz3BZvZU/S427XIB031I/AAAAAAAAAPg/38S5euCch7k/s400/justin_bieber_wallpaper_album_2009.jpg");
                 break;
             }
+            var safe = "safe=strict&";
+            if (req.body.channel_name == "nsfw") {
+                safe = "";
+            }
             var options = {
                 host: 'www.google.com',
                 port: 80,
-                path: "/search?safe=strict&tbm=isch&q=" + encodeURIComponent(args),
+                path: "/search?" + safe + "tbm=isch&q=" + encodeURIComponent(args),
                 method: 'GET',
                 headers: {
                     'user-agent': 'Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 5.0)'
