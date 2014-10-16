@@ -45,7 +45,7 @@ module Cinch
         plugins_to_load.unshift Kernel.const_get(plugin.split('_').collect!{ |w| w.capitalize }.join)
       end
       puts plugins_to_load
-      @config.plugins.plugins = [DiceRoll]
+      @config.plugins.plugins = plugins_to_load
     end
   end
 end
