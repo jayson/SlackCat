@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require "./slackbot_setup"
+require 'open3'
 
 slackcat = Cinch::SlackBot.new do
   if (File.exist?(".config"))
