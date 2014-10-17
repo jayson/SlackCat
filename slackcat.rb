@@ -78,7 +78,6 @@ slackcat = Cinch::SlackBot.new do
         # raise "Timeout" if output.empty? && Time.now.to_i - start > 300
         chr = out.read(1)
         output << chr
-        ret << chr
       end
       error_message = nil
       error_message = err.read unless err.eof?
