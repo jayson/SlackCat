@@ -7,6 +7,7 @@ class Leaderboard
 
   match /(increment) (.*)?/i, prefix: ".", method: :add_one
   match /(plus) (.*)?/i, prefix: ".", method: :add_one
+  match /(\+\+) (.*)?/i, prefix: ".", method: :add_one
   match /(troll) (.*)?/i, prefix: ".", method: :add_one
   match /(pluses)/i, prefix: ".", method: :leaderboard
   match /(trolls)/i, prefix: ".", method: :leaderboard
@@ -41,7 +42,7 @@ class Leaderboard
         db.execute("UPDATE #{table} SET pluses = pluses + 1 WHERE nick = ?", [nick])
 
         db.execute("SELECT pluses FROM #{table} WHERE nick = ?", [nick]) do |row|
-          memo.reply "#{nick} now has #{row} #{table}"
+          memo.reply "#{nick} now has #{row[0]} #{table}"
         end
       else
         memo.reply "Nice try!"
