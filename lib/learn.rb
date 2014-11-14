@@ -6,7 +6,7 @@ class Learn
 
   match /learn ([^ ]*) (.*)?/i, prefix: ".", method: :learn
   match /(.*)?/i, prefix: ".", method: :respond
-  match /(learned)/i, prefix: ".", method: :learned
+  match /learned/i, prefix: ".", method: :learned
   def respond(memo, command)
     db = SQLite3::Database.new "pluses.db"
     db.execute("SELECT response FROM commands WHERE command = ? ORDER BY RANDOM() LIMIT 1", [command]) do |response|
