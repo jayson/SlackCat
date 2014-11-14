@@ -21,7 +21,7 @@ class Learn
     memo.reply "Learned command: #{command}"
   end
 
-  def learned(memo, command)
+  def learned(memo)
     message = "Learned Commands:\n"
     db = SQLite3::Database.new "pluses.db"
     db.execute("SELECT command, COUNT(1) FROM commands GROUP BY command ORDER BY command", [command, num]) do |command, num|
