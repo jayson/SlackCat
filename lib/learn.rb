@@ -25,7 +25,7 @@ class Learn
     message = "Learned Commands:\n"
     db = SQLite3::Database.new "pluses.db"
     db.execute("SELECT command, COUNT(1) FROM commands GROUP BY command ORDER BY command", [command, num]) do |command, num|
-      message += "#{command} (#{num})" 
+      message += "#{command} (#{num})\n" 
     end
     memo.reply message
   end
