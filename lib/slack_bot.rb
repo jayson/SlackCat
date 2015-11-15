@@ -1,3 +1,4 @@
+# vim: ts=2:sw=2:softtabstop=2
 require 'slack_config'
 module Cinch
   class SlackBot < Bot

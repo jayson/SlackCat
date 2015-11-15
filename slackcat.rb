@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# vim: ts=2:sw=2:softtabstop=2
 require "./slackbot_setup"
 require 'open3'
 

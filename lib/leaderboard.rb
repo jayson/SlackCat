@@ -1,3 +1,4 @@
+# vim: ts=2:sw=2:softtabstop=2
 require 'cinch'
 require 'plugin_helpers'
 require 'sqlite3'
