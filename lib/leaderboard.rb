@@ -5,25 +5,27 @@ require 'sqlite3'
 class Leaderboard
     include Cinch::Plugin, SlackCat::PluginHelpers
 
-    match /(increment) (.*)?/i, prefix: ";", method: :add_one
-    match /(plus) (.*)?/i, prefix: ";", method: :add_one
-
-    match /(decrement) (.*)?/i, prefix: ";", method: :sub_one
-    match /(minus) (.*)?/i, prefix: ";", method: :sub_one
-
-    match /(troll) (.*)?/i, prefix: ";", method: :add_one
+    match /(troll) (.*)?/i, prefix: ";", method: :add_troll
+    match /(trolls)/i, prefix: ";", method: :leaderboard
 
     match /(pluses)/i, prefix: ";", method: :leaderboard
-    match /(trolls)/i, prefix: ";", method: :leaderboard
     match /(leaderboard)/i, prefix: ";", method: :leaderboard
 
-    match /^([a-zA-Z\.]+)\+\+$/, use_prefix: false, method: :add_one_2
-    match /^([a-zA-Z\.]+)--$/, use_prefix: false, method: :sub_one_2
+    match /(increment) (.*)?/i, prefix: ";", method: :add_plus
+    match /(plus) (.*)?/i, prefix: ";", method: :add_plus
 
-    match /^\+\+([a-zA-Z\.])+$/, use_prefix: false, method: :add_one_3
-    match /^--([a-zA-Z\.]+)$/, use_prefix: false, method: :sub_one_3
+    match /(decrement) (.*)?/i, prefix: ";", method: :sub_plus
+    match /(minus) (.*)?/i, prefix: ";", method: :sub_plus
 
-    def modify_pluses(memo, nick, username, table, sign)
+    match /^([a-zA-Z\.]+)\+\+$/, use_prefix: false, method: :add_plus_postfix
+    match /^([a-zA-Z\.]+)--$/, use_prefix: false, method: :sub_plus_postfix
+
+    match /^\+\+([a-zA-Z\.])+$/, use_prefix: false, method: :add_plus_prefix
+    match /^--([a-zA-Z\.]+)$/, use_prefix: false, method: :sub_plus_prefix
+
+    def modify_pluses(memo, nick, table, sign)
+        username = "#{memo.user}"
+
         db = SQLite3::Database.new "pluses.db"
         if (nick != "") 
             if (nick == username)
@@ -39,100 +41,46 @@ class Leaderboard
         end
     end
 
-    def add_one_3(memo)
-        #memo.reply "got memo for ++ : '#{memo}'"
-        #memo.reply "message: '#{memo.message}'"
-        #memo.reply "raw: '#{memo.raw}'"
-
+    def add_plus_prefix(memo)
         nick = memo.message.split("++")[1]
-        info("nick is '#{nick}' and memo.user is '#{memo.user}'")
-        username = "#{memo.user}"
-
-        table = "pluses"
-        modify_pluses(memo, nick, username, table, "+")
+        modify_pluses(memo, nick, "pluses", "+")
     end
 
-    def sub_one_3(memo)
-        #memo.reply "got memo for ++ : '#{memo}'"
-        #memo.reply "message: '#{memo.message}'"
-        #memo.reply "raw: '#{memo.raw}'"
-
+    def sub_plus_prefix(memo)
         nick = memo.message.split("--")[1]
-        info("nick is '#{nick}' and memo.user is '#{memo.user}'")
-        username = "#{memo.user}"
-
-        table = "pluses"
-        modify_pluses(memo, nick, username, table, "-")
+        modify_pluses(memo, nick, "pluses", "-")
     end
 
-    def add_one_2(memo)
-        #memo.reply "got memo for ++ : '#{memo}'"
-        #memo.reply "message: '#{memo.message}'"
-        #memo.reply "raw: '#{memo.raw}'"
-
+    def add_plus_postfix(memo)
         nick = memo.message.split("++")[0]
-        info("nick is '#{nick}' and memo.user is '#{memo.user}'")
-        username = "#{memo.user}"
-
-        table = "pluses"
-        modify_pluses(memo, nick, username, table, "+")
+        modify_pluses(memo, nick, "pluses", "+")
     end
 
-    def sub_one_2(memo)
-        #memo.reply "got memo for ++ : '#{memo}'"
-        #memo.reply "message: '#{memo.message}'"
-        #memo.reply "raw: '#{memo.raw}'"
-
+    def sub_plus_postfix(memo)
         nick = memo.message.split("--")[0]
-        info("nick is '#{nick}' and memo.user is '#{memo.user}'")
-        username = "#{memo.user}"
-
-        table = "pluses"
-        modify_pluses(memo, nick, username, table, "-")
+        modify_pluses(memo, nick, "pluses", "-")
     end
 
-    def sub_one(memo, command, term)
-        #info("I'm trying to subtract one!")
-        #memo.reply "I'm trying to subtract one!"
-
-        if command == "decrement"
-            command = "plus"
-        end
-        table = command
-        if table[-1, 1] != "s"
-            table = "#{table}s"
-        end
-        if table[-1, 1] != "e"
-            table = "#{table}es"
-        end
+    def sub_plus(memo, command, term)
         nick = term.split(" ")[0]
-
-        info("nick is '#{nick}' and memo.user is '#{memo.user}'")
-        username = "#{memo.user}"
-
-        modify_pluses(memo, nick, username, table, "-")
+        modify_pluses(memo, nick, "pluses", "-")
     end
 
-    def add_one(memo, command, term)
-        #info("I'm trying to add one!")
-        #memo.reply "I'm trying to add one!"
-
-        if command == "increment"
-            command = "plus"
-        end
-        table = command
-        if table[-1, 1] != "s"
-            table = "#{table}s"
-        end
-        if table[-1, 1] != "e"
-            table = "#{table}es"
-        end
+    def add_plus(memo, command, term)
         nick = term.split(" ")[0]
-
-        info("nick is '#{nick}' and memo.user is '#{memo.user}'")
-        username = "#{memo.user}"
-        modify_pluses(memo, nick, username, table, "+")
+        modify_pluses(memo, nick, "pluses", "+")
     end
+
+    def sub_troll(memo, command, term)
+        nick = term.split(" ")[0]
+        modify_trolls(memo, nick, "trolls", "-")
+    end
+
+    def add_troll(memo, command, term)
+        nick = term.split(" ")[0]
+        modify_trolls(memo, nick, "trolls", "+")
+    end
+
 
     def leaderboard(memo, table)
         db = SQLite3::Database.new "pluses.db"
