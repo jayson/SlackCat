@@ -3,87 +3,67 @@ require "./slackbot_setup"
 require 'open3'
 
 slackcat = Cinch::SlackBot.new do
-  if (File.exist?(".config"))
-    @slack_config = JSON.parse(File.read(".config"))
-  else 
-    @slack_config = []
-    File.write(".config", "{}")
-  end
-
-  set_config :ssl
-  set_config :user
-  set_config :nick, "slackcat"
-  set_config :user
-  set_config :password
-  set_config :server
-  set_config :port, 6667
-  load_plugins
-
-  # Helpers
-  helpers do 
-    def save_config
-      File.write(".config", JSON.pretty_generate(bot.get_slack_config, quirks_mode: true))
+    if (File.exist?(".config"))
+        @slack_config = JSON.parse(File.read(".config"))
+    else 
+        @slack_config = []
+        File.write(".config", "{}")
     end
 
-    def load_config
-      @slack_config = JSON.parse(File.read(".config"))
+    set_config :ssl, true
+    set_config :nick, "travisbot"
+    set_config :user, "travisbot"
+    set_config :password
+    set_config :server, "roguesquadron.irc.slack.com"
+    set_config :port, 6697
+    #set_config :plugins, (["leaderboard"].to_s)
+
+    #info("password: " + password)
+
+    load_plugins
+
+    # Helpers
+    helpers do 
+        def save_config
+            File.write(".config", JSON.pretty_generate(bot.get_slack_config, quirks_mode: true))
+        end
+
+        def load_config
+            @slack_config = JSON.parse(File.read(".config"))
+        end
     end
-  end
 
-  # Base slack bot commands
-  command /join (.+)/ do |message, channel|
-    info("Joining channel #{channel}")
-    bot.join(channel)
-    channels = bot.get_slack_config("channels")
-    channels.unshift channel
-    bot.set_slack_config("channels", channels)
-    save_config
-  end
-
-  command /part(?: (.+))?/ do |message, channel|
-    # Part current channel if none is given
-    channel = channel || message.channel
-
-    if channel
-      info("Parting channel #{channel}")
-      bot.part(channel)
-      channels = bot.get_slack_config("channels")
-      channels.delete_if { |key, value| value == channel }
-      bot.set_slack_config("channels", channels)
-      save_config
-    else
-      info("No such channel to part #{channel}") 
+    # on :message, "/^([a-zA-Z]+)\+\+" do |m|
+    on :message, "hello" do |m|
+        info("trying the on :message!")
+        m.reply "got an '#{m.raw}' message!"
     end
-  end
 
-  command /reload/ do |message|
-    load_config
-    @slack_config = JSON.parse(File.read(".config"))
-    @slack_config["channels"].each do |channel| 
-      bot.join(channel)
+    on :message, /;join (.+)/ do |m|
+        channel = m.message.split(" ")[1]
+        info("trying to join channel: #{channel}")
+        bot.join(channel)
     end
-  end
 
-  command /source/ do |message|
-    message.reply "https://github.com/jayson/SlackCat"
-  end
-
-  command /gitup/ do |message|
-    cmd = "git pull"
-
-    puts cmd
-    Open3.popen3(cmd) do |inn, out, err, wait_thr|
-      output = ""
-      until out.eof?
-        # raise "Timeout" if output.empty? && Time.now.to_i - start > 300
-        chr = out.read(1)
-        output << chr
-      end
-      error_message = nil
-      error_message = err.read unless err.eof?
-      message.reply("#{output} #{error_message}")
+    on :message, /;part (.+)/ do |m|
+        channel = m.message.split(" ")[1]
+        info("trying to part channel: #{channel}")
+        bot.part(channel)
     end
-  end
+
+    #on :message, /[a-zA-Z\.]\+\+$/ do |m|
+    #    name = m.message.split("+")[0]
+    #    info("incrementing '#{name}'")
+    #    m.reply "incremeting '#{name}'! - suck it jpaul"
+    #end
+
+    #on :message, /[a-zA-Z\.]--$/ do |m|
+    #    name = m.message.split("-")[0]
+    #    info("decrementing'#{name}'")
+    #    m.reply "decrementing '#{name}'! - suck it jpaul"
+    #end
+
+
 end
 
 slackcat.start

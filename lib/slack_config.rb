@@ -16,7 +16,7 @@ module Cinch
       config_variable = config_variable.to_s
       if (config_variable == "ssl")
         @config.ssl.use = file_config(config_file_index, false)
-        @config.ssl.verify = file_config(config_file_index, false)
+        #@config.ssl.verify = file_config(config_file_index, false)
       else
         @config.send("#{config_variable}=", file_config(config_file_index, default))
       end
@@ -41,7 +41,9 @@ module Cinch
       plugins = get_slack_config("plugins", [])
       plugins_to_load = []
       plugins.each do |plugin|
+        info("TRYING TO LOAD PLUGIN: #{plugin}")
         require plugin
+        info("LOADED PLUGIN: #{plugin}")
         plugins_to_load.unshift Kernel.const_get(plugin.split('_').collect!{ |w| w.capitalize }.join)
       end
       puts plugins_to_load

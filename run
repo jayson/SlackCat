@@ -1,2 +1,2 @@
 #!/bin/sh
-bundle exec rerun --name slackcat --clear -- ruby slackcat.rb
+bundle exec rerun --name travisbot --clear -- ruby slackcat.rb
