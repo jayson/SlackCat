@@ -17,10 +17,10 @@ class Leaderboard
   match /(decrement) (.*)?/i, prefix: ".", method: :modify_leaderboad
   match /(minus) (.*)?/i, prefix: ".", method: :modify_leaderboard
 
-  match /^([a-zA-Z\.]+)(\+\+)$/, use_prefix: false, method: :modify_leaderboad
+  match /^([a-zA-Z\.]+)(\+\+)$/, use_prefix: false, method: :modify_leaderboard
   match /^([a-zA-Z\.]+)(--)$/, use_prefix: false, method: :modify_leaderboard
 
-  match /^(\+\+)([a-zA-Z\.])+$/, use_prefix: false, method: :modify_leaderboard
+  match /^(\+\+)([a-zA-Z\.]+)$/, use_prefix: false, method: :modify_leaderboard
   match /^(--)([a-zA-Z\.]+)$/, use_prefix: false, method: :modify_leaderboard
 
   def get_table_name(command)
