@@ -10,9 +10,10 @@ class Summon
   match(/(resummon) (.*)?/i, {:prefix => "."})
   def execute(memo, command, term)
     safe_search = "safe=strict&"
-    if memo.channel == "nsfw"
+    if memo.channel == "#nsfw" || memo.channel == "#mensroom"
       safe_search = ""
     end
+    puts safe_search
 
     uri = URI("http://www.google.com/search?#{safe_search}ftbm=isch&um=1&ie=UTF-8&hl=en&tbm=isch&source=og&sa=N&tab=wis&q=#{URI.escape(term)}")
     req = Net::HTTP::Get.new(uri.request_uri)
