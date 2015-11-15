@@ -1,4 +1,4 @@
-# vim: ts=2:sw=2:softtabstop=2
+# vim: ts=2:sw=2:softtabstop=2:et
 require 'net/http'
 require 'timeout'
 

@@ -1,4 +1,4 @@
-# vim: ts=2:sw=2:softtabstop=2
+# vim: ts=2:sw=2:softtabstop=2:et
 # Set up bundler and lib load path
 require "rubygems"
 require "bundler"
