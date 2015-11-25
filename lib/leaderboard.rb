@@ -18,11 +18,11 @@ class Leaderboard
   match /(decrement) (.*)?/i, prefix: ".", method: :modify_leaderboad
   match /(minus) (.*)?/i, prefix: ".", method: :modify_leaderboard
 
-  match /([a-zA-Z0-9\._]+)(\+\+)/, use_prefix: false, method: :modify_leaderboard
-  match /([a-zA-Z0-9\._]+)(--)/, use_prefix: false, method: :modify_leaderboard
+  match /(?<!\S)([a-zA-Z0-9\._-]+)(\+\+)(?!\S)/, use_prefix: false, method: :modify_leaderboard
+  match /(?<!\S)([a-zA-Z0-9\._-]+)(--)(?!\S)/, use_prefix: false, method: :modify_leaderboard
 
-  match /(\+\+)([a-zA-Z0-9\._]+)/, use_prefix: false, method: :modify_leaderboard
-  match /(--)([a-zA-Z0-9\._]+)/, use_prefix: false, method: :modify_leaderboard
+  match /(?<!\S)(\+\+)([a-zA-Z0-9\._-]+)(?!\S)/, use_prefix: false, method: :modify_leaderboard
+  match /(?<!\S)(--)([a-zA-Z0-9\._-]+)(?!\S)/, use_prefix: false, method: :modify_leaderboard
 
   def get_table_name(command)
     # Create hash with default table to pluses then add ones that are different
@@ -47,6 +47,7 @@ class Leaderboard
 
     table = get_table_name(command)
     sign = get_sign(command)
+    return if (nick.to_s == "c" && sign == "+") 
 
     db = SQLite3::Database.new "pluses.db"
     if (nick != "") 
