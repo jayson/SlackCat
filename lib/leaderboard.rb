@@ -67,11 +67,12 @@ class Leaderboard
   def leaderboard(memo, table)
     db = SQLite3::Database.new "pluses.db"
     index = 0
-    message = "#{table.slice(0,1).capitalize + table.slice(1..-1)} Leaderboard:\n"
+    message = "#{table.slice(0,1).capitalize + table.slice(1..-1)} Leaderboard: "
     db.execute("SELECT nick, pluses FROM #{table} ORDER BY pluses DESC LIMIT 5") do |nick, pluses|
       index += 1
-      message += "#{index}. #{pluses} #{nick}\n"
+      message += "#{nick} #{pluses}, "
     end
+    message.gsub!(/, $/, "\n")
     memo.reply message
   end
 end
