@@ -43,7 +43,7 @@ class Leaderboard
     end
 
     # Name these variables something sane
-    command, nick = first_match, second_match.tr('@', '')
+    command, nick = first_match, second_match.tr('@', '').downcase
 
     table = get_table_name(command)
     sign = get_sign(command)
